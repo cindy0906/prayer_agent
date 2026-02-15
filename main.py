@@ -147,7 +147,7 @@ div.stButton > button p { font-size: 17px !important; font-weight: 600 !importan
 # 세션 상태 초기화
 if "result" not in st.session_state:
     st.session_state.result = None
-if "back" in st.query_params:
+if "back" in st.query_params or "cancel" in st.query_params:
     st.session_state.result = None
     st.query_params.clear()
     st.rerun()
@@ -337,7 +337,67 @@ else:
     with col_btn:
         submitted = st.button("기도문 만들어주세요", disabled=not emotion_input, use_container_width=True)
     if submitted:
-        with st.spinner("열심히 감정에 공감하며 기도문을 생성하고 있습니다! 잠시만 기다려 주세요!"):
-            result = app.invoke({"emotion": emotion_input})
-            st.session_state.result = result
-            st.rerun()
+        # 커스텀 로딩 모달 표시
+        st.markdown("""
+        <style>
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45); z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .loading-modal {
+            background: #fff; border-radius: 24px; padding: 40px 36px 32px;
+            text-align: center; width: 280px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        .loading-emoji { font-size: 48px; margin-bottom: 20px; }
+        .loading-messages { position: relative; height: 28px; margin-bottom: 24px; }
+        .loading-msg {
+            position: absolute; width: 100%; text-align: center;
+            font-size: 15px; font-weight: 500; color: #333;
+            opacity: 0;
+        }
+        .loading-msg:nth-child(1) { animation: msgFade 4s infinite; }
+        .loading-msg:nth-child(2) { animation: msgFade 4s infinite 2s; }
+        @keyframes msgFade {
+            0% { opacity: 0; }
+            5% { opacity: 1; }
+            45% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+        .loading-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 28px; }
+        .loading-dots span {
+            width: 8px; height: 8px; border-radius: 50%; background: #C5E1A5;
+            animation: dotPulse 1.2s infinite;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotPulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        .cancel-link {
+            display: inline-block; padding: 8px 28px;
+            border: 1px solid #e0e0e0; border-radius: 20px;
+            font-size: 13px; color: #999; text-decoration: none;
+            transition: all 0.2s;
+        }
+        .cancel-link:hover { color: #666; border-color: #ccc; }
+        </style>
+        <div class="loading-overlay">
+            <div class="loading-modal">
+                <div class="loading-emoji">🙏</div>
+                <div class="loading-messages">
+                    <div class="loading-msg">마음을 분석중입니다..</div>
+                    <div class="loading-msg">열심히 기도문을 만들고 있습니다..</div>
+                </div>
+                <div class="loading-dots"><span></span><span></span><span></span></div>
+                <a class="cancel-link" href="?cancel=1">그만하기</a>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        result = app.invoke({"emotion": emotion_input})
+        st.session_state.result = result
+        st.rerun()
