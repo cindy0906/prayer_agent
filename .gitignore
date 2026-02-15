@@ -1,0 +1,20 @@
+# 환경 변수 (API 키 보호)
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# macOS
+.DS_Store
+
+# 프론트엔드 (사용 안 함)
+frontend/
+
+# 디자인 파일
+*.png
+
+# IDE
+.vscode/
+.idea/
