@@ -379,11 +379,11 @@ else:
         }
         .cancel-link {
             display: inline-block; padding: 8px 28px;
-            border: 1px solid #e0e0e0; border-radius: 20px;
+            border: none; background: none;
             font-size: 13px; color: #999; text-decoration: none;
             transition: all 0.2s;
         }
-        .cancel-link:hover { color: #666; border-color: #ccc; }
+        .cancel-link:hover { color: #666; }
         </style>
         <div class="loading-overlay">
             <div class="loading-modal">
