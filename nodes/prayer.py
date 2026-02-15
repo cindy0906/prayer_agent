@@ -1,12 +1,18 @@
-from dotenv import load_dotenv
 from groq import Groq
 from pathlib import Path
 import os
 import re
 import unicodedata
 
-load_dotenv()
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+try:
+    import streamlit as st
+    api_key = st.secrets["GROQ_API_KEY"]
+except Exception:
+    from dotenv import load_dotenv
+    load_dotenv()
+    api_key = os.getenv("GROQ_API_KEY")
+
+client = Groq(api_key=api_key)
 
 # 프로젝트 루트의 prompts/ 폴더 참조
 PROMPT_DIR = Path(__file__).parent.parent / "prompts"
